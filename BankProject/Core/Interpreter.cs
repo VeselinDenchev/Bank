@@ -1,19 +1,22 @@
-﻿using EvilBank.Models;
-
-namespace EvilBank.Core
+﻿namespace BankProject.Core
 {
+
+    using BankProject.Models;
+    using BankProject.Models.Interfaces;
+
     internal class Interpreter
     {
         public static void Run()
-        
+
         {
             string result = string.Empty;
             string input = null;
 
+            IBank bank = new Bank();
+
             while ((input = Console.ReadLine()) != "Shutdown")
             {
                 bool isEmpty = input == string.Empty;
-
                 if (isEmpty)
                 {
                     continue;
@@ -29,42 +32,46 @@ namespace EvilBank.Core
                     switch (command)
                     {
                         case "AddAccount":
-                            result = Bank.AddAccount(arguments);
+                            result = bank.AddAccount(arguments);
                             break;
 
                         case "RemoveAccount":
-                            result = Bank.RemoveAccount(arguments);
+                            result = bank.RemoveAccount(arguments);
                             break;
 
                         case "DrawFunds":
-                            result = Bank.DrawFunds(arguments);
+                            result = bank.DrawFunds(arguments);
                             break;
 
                         case "RechargeFunds":
-                            result = Bank.RechargeFunds(arguments);
+                            result = bank.RechargeFunds(arguments);
                             break;
 
                         case "DrawLoan":
-                            result = Bank.DrawLoan(arguments);
+                            result = bank.DrawLoan(arguments);
                             break;
 
-
                         case "ReturnLoan":
-                            result = Bank.ReturnLoan(arguments);
+                            result = bank.ReturnLoan(arguments);
                             break;
 
                         case "CheckBalance":
                             arguments.Add("Balance");
-                            result = Bank.Check(arguments);
+                            result = bank.Check(arguments);
                             break;
 
                         case "CheckAccountType":
                             arguments.Add("AccountType");
-                            result = Bank.Check(arguments);
+                            result = bank.Check(arguments);
+                            break;
+
+                        case "CheckAccount":
+                            arguments.Add("Account");
+                            result = bank.Check(arguments);
                             break;
 
                         default:
-                            throw new ArgumentException("Invalid command!");
+                            throw new ArgumentException("Invalid command!" + Environment.NewLine);
                             break;
                     }
                 }
@@ -79,10 +86,9 @@ namespace EvilBank.Core
                     result = null;
                 }
             }
-            result = Bank.Shutdown();
 
+            result = bank.Shutdown();
             Console.WriteLine(result);
-            
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace EvilBank.Models.AccountTypes
+﻿namespace BankProject.Models.AccountTypes
 {
     public abstract class AccountType
     {
@@ -6,8 +6,8 @@
 
         public AccountType(Account account)
         {
-            this.Account = account;
-            this.Balance = account.Balance;
+            Account = account;
+            Balance = account.Balance;
         }
 
         public Account Account { get; set; }
@@ -18,9 +18,9 @@
 
         public decimal UpperLimit { get; set; }
 
-        public virtual void AddMoneyToAccount(decimal amount) => this.Account.Balance += amount;
+        public virtual void AddMoneyToAccount(decimal amount) => Account.Balance += amount;
 
-        public virtual void DrawMoneyFromAccount(decimal amount) => this.Account.Balance -= amount;
+        public virtual void DrawMoneyFromAccount(decimal amount) => Account.Balance -= amount;
 
         public abstract void StateChangeCheck();
     }

@@ -1,6 +1,8 @@
-﻿namespace EvilBank.Models
+﻿namespace BankProject.Models
 {
-    using EvilBank.Models.AccountTypes;
+    using System.Globalization;
+
+    using BankProject.Models.AccountTypes;
 
     public class Loan
     {
@@ -8,8 +10,8 @@
         {
             this.DrawnAmmount = drawnAmmount;
             this.InterestRate = CalculateInterestRate(accountType);
-            Console.WriteLine(accountType.GetType().Name);
             this.YearsToReturn = yearsToReturn;
+            this.NumberFormat = new CultureInfo("en-US").NumberFormat;
         }
 
         public decimal DrawnAmmount { get; set; }
@@ -18,7 +20,9 @@
 
         public int YearsToReturn { get; set; }
 
-        public decimal AmmountToReturn => this.DrawnAmmount * (1 + this.YearsToReturn * this.InterestRate); // Simple interest rate
+        public decimal AmmountToReturn => DrawnAmmount * (1 + YearsToReturn * InterestRate); // Simple interest rate
+
+        private NumberFormatInfo NumberFormat { get; init; }
 
         private decimal CalculateInterestRate(AccountType accountType)
         {
@@ -44,6 +48,16 @@
             }
 
             return interestRate;
+        }
+
+        public override string ToString()
+        {
+            string loanString = string.Format(this.NumberFormat, "\tDrawn ammount: {0:C}", this.DrawnAmmount) + Environment.NewLine +
+                                $"\tInterest rate: {(int)(this.InterestRate * 100)}%" + Environment.NewLine +
+                                $"\tYears to return: {this.YearsToReturn}" + Environment.NewLine +
+                                string.Format(this.NumberFormat, "\tAmmount to return: {0:C}", this.AmmountToReturn);
+
+            return loanString;
         }
     }
 }

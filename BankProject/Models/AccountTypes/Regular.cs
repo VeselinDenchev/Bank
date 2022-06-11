@@ -1,6 +1,7 @@
-﻿
-namespace EvilBank.Models.AccountTypes
+﻿namespace BankProject.Models.AccountTypes
 {
+    using BankProject.Models;
+
     internal class Regular : AccountType
     {
         public Regular(AccountType accountType)
@@ -10,30 +11,30 @@ namespace EvilBank.Models.AccountTypes
 
         public Regular(Account account) : base(account)
         {
-            base.Account = account;
-            this.LowerLimit = 0;
-            this.UpperLimit = 100_000;
+            Account = account;
+            LowerLimit = 0;
+            UpperLimit = 100_000;
             //this.StateChangeCheck();
         }
 
         public override void AddMoneyToAccount(decimal amount)
         {
             base.AddMoneyToAccount(amount);
-            this.StateChangeCheck();
+            StateChangeCheck();
         }
 
         public override void DrawMoneyFromAccount(decimal amount)
         {
             base.DrawMoneyFromAccount(amount);
-            this.StateChangeCheck();
+            StateChangeCheck();
         }
 
         public override void StateChangeCheck()
         {
-            if (base.Account.Balance > this.UpperLimit)
+            if (Account.Balance > UpperLimit)
             {
-                base.Account.AccountType = new Bronze(this);
-                base.Account.AccountType.StateChangeCheck();
+                Account.AccountType = new Bronze(this);
+                Account.AccountType.StateChangeCheck();
             }
         }
     }

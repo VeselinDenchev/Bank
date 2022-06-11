@@ -1,10 +1,22 @@
-﻿namespace EvilBank.Models
+﻿namespace BankProject.Models
 {
-    internal static class Bank
-    {
-        public static List<Account> Accounts = new List<Account>();
+    using System.Globalization;
 
-        public static string AddAccount(List<string> arguments) 
+    using BankProject.Models.Interfaces;
+
+    internal class Bank : IBank
+    {
+        public Bank()
+        {
+            this.Accounts = new List<Account>();
+            this.NumberFormat = new CultureInfo("en-US").NumberFormat;
+        }
+
+        public List<Account> Accounts { get; set; }
+
+        private NumberFormatInfo NumberFormat { get; init; }
+
+        public string AddAccount(List<string> arguments)
         {
             string output = null;
 
@@ -26,21 +38,21 @@
                     string firstName = arguments[0];
                     string lastName = arguments[1];
 
-                    bool isParsed = Decimal.TryParse(arguments[2], out decimal balance);
+                    bool isParsed = decimal.TryParse(arguments[2], out decimal balance);
                     if (isParsed)
                     {
                         if (balance >= 0)
                         {
                             Account account = new Account(firstName, lastName, balance);
-                            Accounts.Add(account);
+                            this.Accounts.Add(account);
 
-                            output = "Account is added successfully!";
+                            output = "Account is added successfully";
                         }
                         else
                         {
                             output = "A client cannot have negative balance!";
                         }
-                        
+
                     }
                     else
                     {
@@ -58,7 +70,7 @@
             return output;
         }
 
-        public static string RemoveAccount(List<string> arguments)
+        public string RemoveAccount(List<string> arguments)
         {
             string output = null;
 
@@ -77,16 +89,10 @@
                     string lastName = arguments[1];
 
                     Account account = FindAccountHolder(firstName, lastName);
+
                     if (account is null)
                     {
-                        try
-                        {
-                            throw new NullReferenceException("Such client doesn't exist");
-                        }
-                        catch (NullReferenceException nre)
-                        {
-                            output = nre.Message;
-                        }
+                        output = "Such client doesn't exist!";
                     }
                     else
                     {
@@ -105,7 +111,7 @@
             return output;
         }
 
-        public static string DrawFunds(List<string> arguments)
+        public string DrawFunds(List<string> arguments)
         {
             string output = null;
 
@@ -126,7 +132,7 @@
                 case 3:
                     string firstName = arguments[0];
                     string lastName = arguments[1];
-                    bool isParsed = Decimal.TryParse(arguments[2], out decimal amount);
+                    bool isParsed = decimal.TryParse(arguments[2], out decimal amount);
                     if (isParsed)
                     {
                         if (amount > 0)
@@ -137,24 +143,20 @@
                             {
                                 if (account is null)
                                 {
-                                    throw new NullReferenceException("Such client doesn't exist!");
+                                    output = "Such client doesn't exist!";
                                 }
                                 else if (account.Balance > amount)
                                 {
                                     account.DrawMoney(amount);
-                                    output = $"Successfully withdrew {amount}$ from {account.AccountHolder}'s account";
+                                    output = string.Format(this.NumberFormat, "Successfully withdrew {0:C} from {1}'s account", 
+                                                            amount, account.AccountHolderFullName);
                                 }
-                                else
-                                {
-                                    throw new ArgumentException("Insufficient funds!");
-                                }
+                                else throw new ArgumentException("Insufficient funds!");
                             }
-                            catch (Exception e)
+                            catch (ArgumentException ae)
                             {
-                                output = e.Message;
+                                output = ae.Message;
                             }
-
-                            break;
                         }
                         else
                         {
@@ -178,7 +180,7 @@
             return output;
         }
 
-        public static string RechargeFunds(List<string> arguments) 
+        public string RechargeFunds(List<string> arguments)
         {
             string output = null;
 
@@ -200,29 +202,22 @@
                     string firstName = arguments[0];
                     string lastName = arguments[1];
 
-                    bool isParsed = Decimal.TryParse(arguments[2], out decimal amount);
+                    bool isParsed = decimal.TryParse(arguments[2], out decimal amount);
                     if (isParsed)
                     {
                         if (amount > 0)
                         {
                             Account account = FindAccountHolder(firstName, lastName);
 
-                            try
+                            if (account is null)
                             {
-                                if (account is null)
-                                {
-                                    throw new InvalidDataException("Such client doesn't exist!");
-                                }
-                                else
-                                {
-                                    //AccountType accountType = new AccountType(account);
-                                    account.AddMoney(amount);
-                                    output = $"Successfully added {amount}$ to the {account.AccountHolder}'s account";
-                                }
+                                output = "Such client doesn't exist!";
                             }
-                            catch (InvalidDataException ide)
+                            else
                             {
-                                output = ide.Message;
+                                account.AddMoney(amount);
+                                output = string.Format(this.NumberFormat, "Successfully added {0:C}$ to the {1}'s account", 
+                                                        amount, account.AccountHolderFullName);
                             }
                         }
                         else
@@ -247,7 +242,7 @@
             return output;
         }
 
-        public static string DrawLoan(List<string> arguments)
+        public string DrawLoan(List<string> arguments)
         {
             string output = null;
 
@@ -272,38 +267,33 @@
                 case 4:
                     string firstName = arguments[0];
                     string lastName = arguments[1];
-                    bool moneyIsParsed = Decimal.TryParse(arguments[2], out decimal moneyAmmount);
+                    bool moneyIsParsed = decimal.TryParse(arguments[2], out decimal moneyAmmount);
                     bool yearsAreParsed = int.TryParse(arguments[3], out int yearsToReturn);
                     if (moneyIsParsed && yearsAreParsed)
                     {
                         if (moneyAmmount > 0 && yearsToReturn > 0)
                         {
                             Account account = FindAccountHolder(firstName, lastName);
+
                             if (account is null)
                             {
-                                try
-                                {
-                                    throw new NullReferenceException("Such client doesn't exist!");
-                                }
-                                catch (NullReferenceException nre)
-                                {
-                                    output = nre.Message;
-                                }
+                                output = "Such client doesn't exist!";
                             }
                             else
                             {
-                                //AccountType accountType = new AccountType(account);
                                 account.AddMoney(moneyAmmount);
 
                                 Loan loan = new Loan(account.AccountType, moneyAmmount, yearsToReturn);
                                 account.Loans.Add(loan);
 
-                                output = $"Successfully drawn a {moneyAmmount}$ loan" + Environment.NewLine +
-                                                    $"The client must return {loan.AmmountToReturn}$ to the bank after" +
-                                                    $" {yearsToReturn} years!" +
-                                                    Environment.NewLine;
+                                output =    string.Format(this.NumberFormat, "Successfully drawn a {0:C} loan", moneyAmmount) + 
+                                            Environment.NewLine +
+                                            string.Format(this.NumberFormat, "The client must return {0:C} to the bank after", 
+                                            loan.AmmountToReturn) 
+                                            + Environment.NewLine +
+                                            $"{yearsToReturn} years!";
                             }
-                            
+
                         }
                         else if (moneyAmmount < 0 && yearsToReturn < 0)
                         {
@@ -343,7 +333,7 @@
             return output;
         }
 
-        public static string ReturnLoan(List<string> arguments)
+        public string ReturnLoan(List<string> arguments)
         {
             string output = null;
 
@@ -365,7 +355,7 @@
                     string firstName = arguments[0];
                     string lastName = arguments[1];
 
-                    bool moneyIsParsed = Decimal.TryParse(arguments[2], out decimal ammount);
+                    bool moneyIsParsed = decimal.TryParse(arguments[2], out decimal ammount);
                     if (moneyIsParsed)
                     {
                         if (ammount > 0)
@@ -374,24 +364,17 @@
 
                             if (account is null)
                             {
-                                try
-                                {
-                                    throw new NullReferenceException("Such client doesn't exist");
-                                }
-                                catch (NullReferenceException nre)
-                                {
-                                    output = nre.Message;
-                                }
+                                output = "Such client doesn't exist!";
                             }
                             else
                             {
-                                Loan loanToBeReturned = FindLoan(account, ammount);
+                                Loan loanToBeReturned = FindLoan(account.Loans, ammount);
 
                                 try
                                 {
                                     if (loanToBeReturned is null)
                                     {
-                                        throw new InvalidDataException("Such loan doesn't exist!");
+                                        output = "Such loan doesn't exist!";
                                     }
                                     else
                                     {
@@ -399,18 +382,17 @@
                                         {
                                             if (account.Balance < loanToBeReturned.AmmountToReturn)
                                             {
-                                                throw new OperationCanceledException("Account balance is less than the loan return ammount! " +
-                                                                                        "Transaction canceled!");
+                                                throw new OperationCanceledException("Account balance is less than the loan return " +
+                                                                                        "ammount! Transaction canceled!");
                                             }
                                             else
                                             {
-                                                //AccountType accountType = new AccountType(account);
                                                 account.DrawMoney(loanToBeReturned.AmmountToReturn);
 
-                                                output = $"Successfully returned a {ammount}$ loan" + Environment.NewLine +
-                                                    $"The client returned total of  {loanToBeReturned.AmmountToReturn}$ to the bank " +
-                                                    $"after {loanToBeReturned.YearsToReturn} years!" +
-                                                    Environment.NewLine;
+                                                output =    $"Successfully returned the loan" + Environment.NewLine +
+                                                            string.Format(this.NumberFormat, 
+                                                            "The client returned total of {0:C} to the", loanToBeReturned.AmmountToReturn) +
+                                                            $" bank after {loanToBeReturned.YearsToReturn} years!";
                                             }
                                         }
                                         catch (OperationCanceledException oce)
@@ -447,7 +429,7 @@
             return output;
         }
 
-        public static string Check(List<string> arguments)
+        public string Check(List<string> arguments)
         {
             string output = null;
 
@@ -465,28 +447,26 @@
 
                     if (account is null)
                     {
-                        try
-                        {
-                            throw new NullReferenceException("Such client doesn't exist");
-                        }
-                        catch (NullReferenceException nre)
-                        {
-                            output = nre.Message;
-                        }
+                        output = "Such client doesn't exist!";
                     }
                     else
                     {
                         string checkTypeString = arguments[2];
 
-                        if (checkTypeString == "Balance")
+                        switch (checkTypeString)
                         {
-                            output = $"{firstName} {lastName} balance is {account.Balance}$";
+                            case "Balance":
+                                output = $"{account.AccountHolderFullName} balance is {account.Balance}$";
+                                break;
+
+                            case "AccountType":
+                                output = $"{account.AccountHolderFullName} account's type is {account.AccountTypeName}";
+                                break;
+
+                            case "Account":
+                                output = account.ToString();
+                                break;
                         }
-                        else if (checkTypeString == "AccountType")
-                        {
-                            output = $"{firstName} {lastName} account type is {account.AccountTypeName}";
-                        }
-                        
                     }
                     break;
 
@@ -494,37 +474,32 @@
                     output = "Too many arguments passed!";
                     break;
             }
-
             output += Environment.NewLine;
 
             return output;
         }
 
-        public static string Shutdown()
+        public string Shutdown()
         {
             string output = "Shutting down...";
 
             return output;
         }
 
-        private static Account FindAccountHolder(string firstName, string lastName)
+        private Account FindAccountHolder(string firstName, string lastName)
         {
-            Account account = Accounts.Where(a => a.Owner.FirstName == firstName && a.Owner.LastName == lastName)
+            Account account = Accounts.Where(a => a.FirstName == firstName && a.LastName == lastName)
                                         .FirstOrDefault();
 
             return account;
         }
 
-        private static Loan FindLoan(Account account, decimal ammount)
+        private Loan FindLoan(List<Loan> loans, decimal ammount)
         {
-            foreach (Loan loan in account.Loans)
+            foreach (Loan loan in loans)
             {
                 bool isMatched = loan.DrawnAmmount == ammount;
-
-                if (isMatched)
-                {
-                    return loan;
-                }
+                if (isMatched) return loan;
             }
 
             return null;
