@@ -2,8 +2,8 @@
 {
     using System.Globalization;
 
-    using BankProject.Core;
     using BankProject.Models.AccountTypes;
+    using BankProject.Singletons;
 
     public class Loan
     {
@@ -12,7 +12,7 @@
             this.DrawnAmount = drawnAmmount;
             this.InterestRate = CalculateInterestRate(accountType);
             this.YearsToReturn = yearsToReturn;
-            this.NumberFormat = NumberFormatSingleton.NumberFormat;
+            this.NumberFormat = NumberFormatSingleton.Instance;
         }
 
         public decimal DrawnAmount { get; set; }

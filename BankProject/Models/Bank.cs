@@ -2,15 +2,15 @@
 {
     using System.Globalization;
 
-    using BankProject.Core;
     using BankProject.Models.Interfaces;
+    using BankProject.Singletons;
 
     internal class Bank : IBank
     {
         public Bank()
         {
             this.Accounts = new List<Account>();
-            this.NumberFormat = NumberFormatSingleton.NumberFormat;
+            this.NumberFormat = NumberFormatSingleton.Instance;
         }
 
         public List<Account> Accounts { get; set; }

@@ -4,8 +4,9 @@
     using System.Globalization;
     using System.Text;
 
-    using BankProject.Core;
+    using BankProject.Commands;
     using BankProject.Models.AccountTypes;
+    using BankProject.Singletons;
 
     public class Account
     {
@@ -18,7 +19,7 @@
             this.Loans = new List<Loan>();
             this.AccountType = new Regular(this);
             this.AccountType.StateChangeCheck();
-            this.NumberFormat = NumberFormatSingleton.NumberFormat;
+            this.NumberFormat = NumberFormatSingleton.Instance;
         }
 
         public string FirstName { get; set; }

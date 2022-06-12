@@ -1,3 +1,3 @@
-﻿using BankProject.Core;
+﻿using BankProject.Commands;
 
-Interpreter.Run();
+Invoker.Run();
