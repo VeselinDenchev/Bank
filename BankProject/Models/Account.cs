@@ -1,8 +1,10 @@
 ﻿namespace BankProject.Models
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Text;
 
+    using BankProject.Core;
     using BankProject.Models.AccountTypes;
 
     public class Account
@@ -16,6 +18,7 @@
             this.Loans = new List<Loan>();
             this.AccountType = new Regular(this);
             this.AccountType.StateChangeCheck();
+            this.NumberFormat = NumberFormatSingleton.NumberFormat;
         }
 
         public string FirstName { get; set; }
@@ -34,6 +37,8 @@
 
         public List<Loan> Loans { get; set; }
 
+        private NumberFormatInfo NumberFormat { get; init; }
+
         public void AddMoney(decimal amount)
         {
             AccountType.AddMoneyToAccount(amount);
@@ -44,12 +49,24 @@
             AccountType.DrawMoneyFromAccount(amount);
         }
 
+        public void DrawLoan(Loan loan)
+        {
+            this.AddMoney(loan.DrawnAmount);
+            this.Loans.Add(loan);
+        }
+
+        public void ReturnLoan(Loan loan)
+        {
+            this.DrawMoney(loan.AmountToReturn);
+            this.Loans.Remove(loan);
+        }
+
         public override string ToString()
         {
             StringBuilder accountStringBuilder = new StringBuilder();
             accountStringBuilder.AppendLine($"Fullname: {this.AccountHolderFullName}");
             accountStringBuilder.AppendLine($"ID: {this.Id}");
-            accountStringBuilder.AppendLine($"Balance: {this.Balance}");
+            accountStringBuilder.AppendLine(string.Format(this.NumberFormat, "Balance: {0:C}", this.Balance));
             accountStringBuilder.AppendLine($"Account type: {this.AccountTypeName}");
 
             bool hasLoans = this.Loans.Count > 0;

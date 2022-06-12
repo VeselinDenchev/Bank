@@ -1,4 +1,3 @@
-﻿
-using BankProject.Core;
+﻿using BankProject.Core;
 
 Interpreter.Run();

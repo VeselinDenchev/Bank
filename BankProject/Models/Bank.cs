@@ -2,6 +2,7 @@
 {
     using System.Globalization;
 
+    using BankProject.Core;
     using BankProject.Models.Interfaces;
 
     internal class Bank : IBank
@@ -9,7 +10,7 @@
         public Bank()
         {
             this.Accounts = new List<Account>();
-            this.NumberFormat = new CultureInfo("en-US").NumberFormat;
+            this.NumberFormat = NumberFormatSingleton.NumberFormat;
         }
 
         public List<Account> Accounts { get; set; }
@@ -216,7 +217,7 @@
                             else
                             {
                                 account.AddMoney(amount);
-                                output = string.Format(this.NumberFormat, "Successfully added {0:C}$ to the {1}'s account", 
+                                output = string.Format(this.NumberFormat, "Successfully added {0:C} to the {1}'s account", 
                                                         amount, account.AccountHolderFullName);
                             }
                         }
@@ -281,17 +282,13 @@
                             }
                             else
                             {
-                                account.AddMoney(moneyAmmount);
-
                                 Loan loan = new Loan(account.AccountType, moneyAmmount, yearsToReturn);
-                                account.Loans.Add(loan);
+                                account.DrawLoan(loan);
 
-                                output =    string.Format(this.NumberFormat, "Successfully drawn a {0:C} loan", moneyAmmount) + 
+                                output = string.Format(this.NumberFormat, "Successfully drawn a {0:C} loan", moneyAmmount) +
                                             Environment.NewLine +
-                                            string.Format(this.NumberFormat, "The client must return {0:C} to the bank after", 
-                                            loan.AmmountToReturn) 
-                                            + Environment.NewLine +
-                                            $"{yearsToReturn} years!";
+                                            string.Format(this.NumberFormat, "The client must return {0:C} to the bank after {1} years",
+                                            loan.AmountToReturn, yearsToReturn);
                             }
 
                         }
@@ -370,41 +367,33 @@
                             {
                                 Loan loanToBeReturned = FindLoan(account.Loans, ammount);
 
-                                try
+                                if (loanToBeReturned is null)
                                 {
-                                    if (loanToBeReturned is null)
-                                    {
-                                        output = "Such loan doesn't exist!";
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                            if (account.Balance < loanToBeReturned.AmmountToReturn)
-                                            {
-                                                throw new OperationCanceledException("Account balance is less than the loan return " +
-                                                                                        "ammount! Transaction canceled!");
-                                            }
-                                            else
-                                            {
-                                                account.DrawMoney(loanToBeReturned.AmmountToReturn);
-
-                                                output =    $"Successfully returned the loan" + Environment.NewLine +
-                                                            string.Format(this.NumberFormat, 
-                                                            "The client returned total of {0:C} to the", loanToBeReturned.AmmountToReturn) +
-                                                            $" bank after {loanToBeReturned.YearsToReturn} years!";
-                                            }
-                                        }
-                                        catch (OperationCanceledException oce)
-                                        {
-                                            output = oce.Message;
-                                        }
-
-                                    }
+                                    output = "Such loan doesn't exist!";
                                 }
-                                catch (InvalidDataException ide)
+                                else
                                 {
-                                    output = ide.Message;
+                                    try
+                                    {
+                                        if (account.Balance < loanToBeReturned.AmountToReturn)
+                                        {
+                                            throw new OperationCanceledException("Account balance is less than the loan return " +
+                                                                                    "ammount! Transaction canceled!");
+                                        }
+                                        else
+                                        {
+                                            account.ReturnLoan(loanToBeReturned);
+
+                                            output =    $"Successfully returned the loan" + Environment.NewLine +
+                                                        string.Format(this.NumberFormat, 
+                                                        "The client returned total of {0:C} to the", loanToBeReturned.AmountToReturn) +
+                                                        $" bank after {loanToBeReturned.YearsToReturn} years!";
+                                        }
+                                    }
+                                    catch (OperationCanceledException oce)
+                                    {
+                                        output = oce.Message;
+                                    }
                                 }
                             }
                         }
@@ -456,7 +445,8 @@
                         switch (checkTypeString)
                         {
                             case "Balance":
-                                output = $"{account.AccountHolderFullName} balance is {account.Balance}$";
+                                output = string.Format(this.NumberFormat, "{0} balance is {1:C})", 
+                                            account.AccountHolderFullName, account.Balance);
                                 break;
 
                             case "AccountType":
@@ -498,7 +488,7 @@
         {
             foreach (Loan loan in loans)
             {
-                bool isMatched = loan.DrawnAmmount == ammount;
+                bool isMatched = loan.DrawnAmount == ammount;
                 if (isMatched) return loan;
             }
 

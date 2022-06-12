@@ -1,6 +1,5 @@
 ﻿namespace BankProject.Core
 {
-
     using BankProject.Models;
     using BankProject.Models.Interfaces;
 
