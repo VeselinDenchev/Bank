@@ -2,7 +2,7 @@
 
 namespace BankProject.Core
 {
-    internal class NumberFormatSingleton
+    internal sealed class NumberFormatSingleton
     {
         private static readonly Lazy<NumberFormatSingleton> lazyInitialization =
                                 new Lazy<NumberFormatSingleton>(() => new NumberFormatSingleton());
