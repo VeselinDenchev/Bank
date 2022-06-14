@@ -6,7 +6,7 @@
 
     public class UndoCommand : ICommand
     {
-        public string Execute(IBank bank, List<string> arguments)
+        public string Execute(IBank bank, List<string> arguments = null)
         {
             bank.RevertSnapshot(out bool isSuccessful);
 
@@ -14,7 +14,7 @@
 
             if (isSuccessful)
             {
-                result = MessageConstant.SUCCESSFULLY_UNDO_LAST_COMMAND_MESSAGE;
+                result = MessageConstant.SUCCESSFULLY_UNDID_LAST_COMMAND_MESSAGE;
             }
             else
             {

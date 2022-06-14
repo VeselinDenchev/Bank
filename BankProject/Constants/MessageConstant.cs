@@ -80,7 +80,7 @@
         // SYSTEM MESSAGES
         public const string INVALID_COMMAND_MESSAGE = "Invalid command! \n";
 
-        public const string SUCCESSFULLY_UNDO_LAST_COMMAND_MESSAGE = "Successfully undo last command \n";
+        public const string SUCCESSFULLY_UNDID_LAST_COMMAND_MESSAGE = "Successfully undid last command \n";
 
         public const string NOTHING_TO_UNDO_MESSAGE = "Nothing to undo! \n";
 
