@@ -2,7 +2,6 @@
 {
     public interface IOriginator<T>
     {
-
         public T State { get; set; }
 
         public Memento<T> SaveMemento() => new Memento<T>(this.State);

@@ -1,7 +1,7 @@
-﻿using BankProject.Memento.Interfaces;
-
-namespace BankProject.Memento
+﻿namespace BankProject.Memento
 {
+    using BankProject.Memento.Interfaces;
+
     public class Memento<T> : IMemento<T>
     {
         public Memento(T state)
