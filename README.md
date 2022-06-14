@@ -1,3 +1,3 @@
 # Bank
 Design Patterns Course Project
-I have implemented Command, State, Singleton and Memento design patterns.
+I have implemented Command, State and Memento design patterns.
