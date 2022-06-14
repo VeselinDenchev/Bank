@@ -1,10 +1,13 @@
 ﻿namespace BankProject.Commands.AccountCommands
 {
-    public class AddAccountCommand : BankCommand
+    using BankProject.Commands.Interfaces;
+    using BankProject.Models.Interfaces;
+
+    public class AddAccountCommand : ICommand
     {
-        public override string Execute(List<string> arguments)
+        public string Execute(IBank bank, List<string> arguments)
         {
-            string result = Bank.AddAccount(arguments);
+            string result = bank.AddAccount(arguments);
 
             return result;
         }

@@ -5,6 +5,8 @@
     using BankProject.Commands.Interfaces;
     using BankProject.Commands.SystemCommands;
     using BankProject.Constants;
+    using BankProject.Models;
+    using BankProject.Models.Interfaces;
 
     public class Invoker : IInvoker
     {
@@ -12,6 +14,8 @@
         {
             string result = string.Empty;
             string input = null;
+
+            IBank bank = new Bank();
 
             ICommand command = null;
 
@@ -35,10 +39,20 @@
 
                 try
                 {
-                    if (commandTypeToExecute is null) throw new ArgumentException(MessageConstant.INVALID_COMMAND_MESSAGE + Environment.NewLine);
+                    if (commandTypeToExecute is null) throw new ArgumentException(MessageConstant.INVALID_COMMAND_MESSAGE);
 
-                    command = (ICommand)Activator.CreateInstance(commandTypeToExecute);
-                    result = command.Execute(arguments);
+                    try
+                    {
+                        command = (ICommand)Activator.CreateInstance(commandTypeToExecute);
+                        result = command.Execute(bank, arguments);
+                    }
+                    catch (MissingMethodException)
+                    {
+                        result = MessageConstant.INVALID_COMMAND_MESSAGE;
+
+                    }
+                    
+
                 }
                 catch (ArgumentException ae)
                 {
@@ -53,7 +67,7 @@
             }
 
             command = new ShutdownCommand(); 
-            result = command.Execute();
+            result = command.Execute(bank);
             Console.WriteLine(result);
         }
     }

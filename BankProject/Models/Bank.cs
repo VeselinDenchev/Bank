@@ -6,14 +6,13 @@
     using BankProject.Memento;
     using BankProject.Memento.Interfaces;
     using BankProject.Models.Interfaces;
-    using BankProject.Singleton;
 
-    public class Bank : IBank
+    public sealed class Bank : IBank
     {
         public Bank()
         {
             this.Accounts = new List<IAccount>();
-            this.NumberFormat = NumberFormatSingleton.Instance;
+            this.NumberFormat = new CultureInfo(StringConstant.ENGLISH_UNITED_STATES_CULTURE_STRING).NumberFormat;
             this.MementosStack = new Caretaker<IBank>().MementosStack;
         }
 
@@ -52,7 +51,7 @@
                     {
                         if (balance >= 0)
                         {
-                            IAccount account = new Account(firstName, lastName, balance);
+                            IAccount account = new Account(firstName, lastName, balance, this.NumberFormat);
                             this.CreateSnapshot();
 
                             this.Accounts.Add(account);
@@ -301,7 +300,7 @@
                             {
                                 this.CreateSnapshot();
 
-                                ILoan loan = new Loan(moneyAmmount, account.AccountType, yearsToReturn);
+                                ILoan loan = new Loan(moneyAmmount, account.AccountType, yearsToReturn, this.NumberFormat);
                                 account.DrawLoan(loan);
 
                                 output = string.Format(this.NumberFormat, MessageConstant.SUCCESSFULLY_DRAWN_LOAN_MESSAGE, 
@@ -441,6 +440,10 @@
 
             switch (arguments.Count)
             {
+                case < 2:
+                    output = MessageConstant.MISSING_FIRST_NAME_AND_LAST_NAME_ARGUMENTS;
+                    break;
+
                 case 2:
                     output = MessageConstant.MISSING_LAST_NAME_ARGUMENT_MESSAGE;
                     break;
@@ -551,13 +554,14 @@
                 {
                     ILoan currentLoan = currentAccount.Loans[j];
 
-                    ILoan currentLoanCopy = new Loan(currentLoan.Id, currentLoan.DrawnAmount, currentLoan.InterestRate, currentLoan.YearsToReturn);
+                    ILoan currentLoanCopy = new Loan(currentLoan.Id, currentLoan.DrawnAmount, currentLoan.InterestRate, currentLoan.YearsToReturn,
+                                                        this.NumberFormat);
 
                     copyLoans.Add(currentLoanCopy);
                 }
 
                 IAccount currentAccountCopy = new Account(currentAccount.FirstName, currentAccount.LastName, currentAccount.Id,
-                                                    currentAccount.Balance, copyLoans);
+                                                    currentAccount.Balance, copyLoans, this.NumberFormat);
 
                 copyBank.Accounts.Add(currentAccountCopy);
             }

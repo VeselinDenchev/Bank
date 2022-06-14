@@ -1,12 +1,14 @@
 ﻿namespace BankProject.Commands.SystemCommands
 {
+    using BankProject.Commands.Interfaces;
     using BankProject.Constants;
+    using BankProject.Models.Interfaces;
 
-    public class UndoCommand : BankCommand
+    public class UndoCommand : ICommand
     {
-        public override string Execute(List<string> arguments)
+        public string Execute(IBank bank, List<string> arguments)
         {
-            this.Bank.RevertSnapshot(out bool isSuccessful);
+            bank.RevertSnapshot(out bool isSuccessful);
 
             string result = null;
 

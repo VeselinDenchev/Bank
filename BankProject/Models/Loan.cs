@@ -5,26 +5,25 @@
     using BankProject.Constants;
     using BankProject.Models.AccountTypes;
     using BankProject.Models.Interfaces;
-    using BankProject.Singleton;
 
     public class Loan : ILoan
     {
-        public Loan(decimal drawnAmmount, AccountType accountType, byte yearsToReturn)
-        {
-            this.Id = Guid.NewGuid().ToString();
-            this.DrawnAmount = drawnAmmount;
-            this.InterestRate = CalculateInterestRate(accountType);
-            this.YearsToReturn = yearsToReturn;
-            this.NumberFormat = NumberFormatSingleton.Instance;
-        }
-
-        public Loan(string id, decimal drawnAmmount, decimal interestRate, byte yearsToReturn)
+        public Loan(string id, decimal drawnAmmount, decimal interestRate, byte yearsToReturn, NumberFormatInfo numberFormat)
         {
             this.Id = id;
             this.DrawnAmount = drawnAmmount;
             this.InterestRate = interestRate;
             this.YearsToReturn = yearsToReturn;
-            this.NumberFormat = NumberFormatSingleton.Instance;
+            this.NumberFormat = numberFormat;
+        }
+
+        public Loan(decimal drawnAmmount, AccountType accountType, byte yearsToReturn, NumberFormatInfo numberFormat)
+        {
+            this.Id = Guid.NewGuid().ToString();
+            this.DrawnAmount = drawnAmmount;
+            this.InterestRate = CalculateInterestRate(accountType);
+            this.YearsToReturn = yearsToReturn;
+            this.NumberFormat = numberFormat;
         }
 
         public string Id { get; init; }

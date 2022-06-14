@@ -1,10 +1,13 @@
 ﻿namespace BankProject.Commands.CheckCommands
 {
-    public abstract class CheckCommand : BankCommand
+    using BankProject.Commands.Interfaces;
+    using BankProject.Models.Interfaces;
+
+    public abstract class CheckCommand : ICommand
     {
-        public override string Execute(List<string> arguments)
+        public virtual string Execute(IBank bank, List<string> arguments)
         {
-            string result = Bank.Check(arguments);
+            string result = bank.Check(arguments);
 
             return result;
         }

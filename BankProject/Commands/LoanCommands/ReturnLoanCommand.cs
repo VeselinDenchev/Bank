@@ -1,10 +1,13 @@
 ﻿namespace BankProject.Commands.LoanCommands
 {
-    internal class ReturnLoanCommand : BankCommand
+    using BankProject.Commands.Interfaces;
+    using BankProject.Models.Interfaces;
+
+    internal class ReturnLoanCommand : ICommand
     {
-        public override string Execute(List<string> arguments)
+        public string Execute(IBank bank, List<string> arguments)
         {
-            string result = this.Bank.ReturnLoan(arguments);
+            string result = bank.ReturnLoan(arguments);
 
             return result;
         }

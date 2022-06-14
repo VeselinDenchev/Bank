@@ -7,23 +7,17 @@
     using BankProject.Constants;
     using BankProject.Models.AccountTypes;
     using BankProject.Models.Interfaces;
-    using BankProject.Singleton;
 
     public class Account : IAccount
     {
-        public Account(string firstName, string lastName, string id, decimal balance, List<ILoan> loans)
+        public Account(string firstName, string lastName, string id, decimal balance, List<ILoan> loans, NumberFormatInfo numberFormat)
+            : this(firstName, lastName, balance, numberFormat)
         {
-            this.FirstName = firstName;
-            this.LastName = lastName;
             this.Id = id;
-            this.Balance = balance;
             this.Loans = loans;
-            this.AccountType = new Regular(this);
-            this.AccountType.StateChangeCheck();
-            this.NumberFormat = NumberFormatSingleton.Instance;
         }
 
-        public Account(string firstName, string lastName, decimal balance)
+        public Account(string firstName, string lastName, decimal balance, NumberFormatInfo numberFormat)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -32,7 +26,7 @@
             this.Loans = new List<ILoan>();
             this.AccountType = new Regular(this);
             this.AccountType.StateChangeCheck();
-            this.NumberFormat = NumberFormatSingleton.Instance;
+            this.NumberFormat = numberFormat;
         }
 
         public string FirstName { get; init; }

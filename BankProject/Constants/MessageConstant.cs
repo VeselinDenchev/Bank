@@ -21,6 +21,8 @@
 
         public const string MISSING_YEARS_TO_RETURN_ARGUMENTS_MESSAGE = "Years to return argument is missing!";
 
+        public const string MISSING_FIRST_NAME_AND_LAST_NAME_ARGUMENTS = "First name and last name arguments are missing!";
+
 
         // ACCOUNT MESSAGES
         public const string ACCOUNT_ADDED_SUCCESSFULLY_MESSAGE = "Account is added successfully";
@@ -76,7 +78,7 @@
 
 
         // SYSTEM MESSAGES
-        public const string INVALID_COMMAND_MESSAGE = "Invalid command!";
+        public const string INVALID_COMMAND_MESSAGE = "Invalid command! \n";
 
         public const string SUCCESSFULLY_UNDO_LAST_COMMAND_MESSAGE = "Successfully undo last command \n";
 

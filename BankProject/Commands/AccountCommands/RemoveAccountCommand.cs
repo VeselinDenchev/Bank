@@ -1,10 +1,13 @@
 ﻿namespace BankProject.Commands.AccountCommands
 {
-    public class RemoveAccountCommand : BankCommand
+    using BankProject.Commands.Interfaces;
+    using BankProject.Models.Interfaces;
+
+    public class RemoveAccountCommand : ICommand
     {
-        public override string Execute(List<string> arguments)
+        public string Execute(IBank bank, List<string> arguments)
         {
-            string result = this.Bank.RemoveAccount(arguments);
+            string result = bank.RemoveAccount(arguments);
 
             return result;
         }
