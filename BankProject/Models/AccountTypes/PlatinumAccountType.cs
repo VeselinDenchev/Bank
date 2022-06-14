@@ -3,19 +3,19 @@
     using BankProject.Constants;
     using BankProject.Models.Interfaces;
 
-    public class Regular : AccountType
+    public class PlatinumAccountType : AccountType
     {
-        public Regular(AccountType accountType)
+        public PlatinumAccountType(AccountType accountType)
             : this(accountType.Account)
         {
         }
 
-        public Regular(IAccount account) 
+        public PlatinumAccountType(IAccount account) 
             : base(account)
         {
             Account = account;
-            LowerLimit = AccountTypeLimitConstant.REGULAR_ACCOUNT_TYPE_LOWER_LIMIT;
-            UpperLimit = AccountTypeLimitConstant.REGULAR_ACCOUNT_TYPE_UPPER_LIMIT;
+            LowerLimit = AccountTypeLimitConstant.PLATINUM_ACCOUNT_TYPE_LOWER_LIMIT;
+            UpperLimit = AccountTypeLimitConstant.PLATINUM_ACCOUNT_TYPE_UPPER_LIMIT;
         }
 
         public override void AddMoneyToAccount(decimal amount)
@@ -32,9 +32,9 @@
 
         public override void StateChangeCheck()
         {
-            if (Account.Balance > UpperLimit)
+            if (Account.Balance < LowerLimit)
             {
-                Account.AccountType = new Bronze(this);
+                Account.AccountType = new GoldAccountType(this);
                 Account.AccountType.StateChangeCheck();
             }
         }

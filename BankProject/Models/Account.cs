@@ -24,7 +24,7 @@
             this.Id = Guid.NewGuid().ToString();
             this.Balance = balance;
             this.Loans = new List<ILoan>();
-            this.AccountType = new Regular(this);
+            this.AccountType = new RegularAccountType(this);
             this.AccountType.StateChangeCheck();
             this.NumberFormat = numberFormat;
         }
