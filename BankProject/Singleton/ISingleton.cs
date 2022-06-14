@@ -1,4 +1,4 @@
-﻿namespace BankProject.Singletons
+﻿namespace BankProject.Singleton
 {
     internal interface ISingleton<T> 
         where T : new()

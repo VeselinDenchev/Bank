@@ -4,23 +4,21 @@
 
     using BankProject.Commands.Interfaces;
     using BankProject.Commands.SystemCommands;
-    using BankProject.Singletons;
-    using BankProject.Models.Interfaces;
-    using BankProject.Models;
+    using BankProject.Constants;
 
-    internal static class Invoker
+    public class Invoker : IInvoker
     {
-        public static void Run()
-
+        public void Run()
         {
             string result = string.Empty;
             string input = null;
 
             ICommand command = null;
+
             Assembly assembly = Assembly.GetCallingAssembly();
             Type[] types = assembly.GetTypes();
 
-            while ((input = Console.ReadLine()) != "Shutdown")
+            while ((input = Console.ReadLine()) != CommandConstant.SHUTDOWN_COMMAND_STRING)
             {
                 bool isEmpty = input == string.Empty;
                 if (isEmpty)
@@ -32,18 +30,19 @@
 
                 string commandName = arguments[0];
                 arguments.RemoveAt(0);
-                Type commandTypeToExecute = types.FirstOrDefault(t => t.Name == commandName + "Command");
+
+                Type commandTypeToExecute = types.FirstOrDefault(t => t.Name == commandName + CommandConstant.COMMAND_SUFFIX);
 
                 try
                 {
-                    if (commandTypeToExecute is null) throw new ArgumentException("Invalid command!" + Environment.NewLine);
+                    if (commandTypeToExecute is null) throw new ArgumentException(MessageConstant.INVALID_COMMAND_MESSAGE + Environment.NewLine);
 
                     command = (ICommand)Activator.CreateInstance(commandTypeToExecute);
                     result = command.Execute(arguments);
                 }
                 catch (ArgumentException ae)
                 {
-                    Console.WriteLine(ae.Message);
+                    result = ae.Message;
                 }
 
                 if (result is not null)

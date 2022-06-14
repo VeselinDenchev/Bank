@@ -1,16 +1,16 @@
 ﻿namespace BankProject.Models.AccountTypes
 {
+    using BankProject.Models.Interfaces;
+
     public abstract class AccountType
     {
-        private readonly double interestRate;
-
-        public AccountType(Account account)
+        public AccountType(IAccount account)
         {
             Account = account;
             Balance = account.Balance;
         }
 
-        public Account Account { get; set; }
+        public IAccount Account { get; set; }
 
         public decimal Balance { get; set; }
 

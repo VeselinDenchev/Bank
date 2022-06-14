@@ -1,3 +1,5 @@
 ﻿using BankProject.Commands;
+using BankProject.Commands.Interfaces;
 
-Invoker.Run();
+IInvoker invoker = new Invoker();
+invoker.Run();

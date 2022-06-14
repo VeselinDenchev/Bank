@@ -1,13 +1,14 @@
-﻿namespace BankProject.Commands.CheckCommands
+﻿using BankProject.Constants;
+
+namespace BankProject.Commands.CheckCommands
 {
-    internal class CheckAccountTypeCommand : BankCommand
+    public class CheckAccountTypeCommand : CheckCommand
     {
         public override string Execute(List<string> arguments)
         {
-            arguments.Add("AccountType");
-            string result = Bank.Check(arguments);
+            arguments.Add(StringConstant.ACCOUNT_TYPE_CHECK_STRING);
 
-            return result;
+            return base.Execute(arguments);
         }
     }
 }

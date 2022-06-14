@@ -1,17 +1,21 @@
 ﻿namespace BankProject.Models.AccountTypes
 {
-    internal class Bronze : AccountType
+    using BankProject.Constants;
+    using BankProject.Models.Interfaces;
+
+    public class Bronze : AccountType
     {
         public Bronze(AccountType accountType)
             : this(accountType.Account)
         {
         }
 
-        public Bronze(Account account) : base(account)
+        public Bronze(IAccount account) 
+            : base(account)
         {
             Account = account;
-            LowerLimit = 100_000;
-            UpperLimit = 200_000;
+            LowerLimit = AccountTypeLimitConstant.BRONZE_ACCOUNT_TYPE_LOWER_LIMIT;
+            UpperLimit = AccountTypeLimitConstant.BRONZE_ACCOUNT_TYPE_UPPER_LIMIT;
         }
 
         public override void AddMoneyToAccount(decimal amount)

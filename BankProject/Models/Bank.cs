@@ -2,20 +2,28 @@
 {
     using System.Globalization;
 
+    using BankProject.Constants;
+    using BankProject.Memento;
+    using BankProject.Memento.Interfaces;
     using BankProject.Models.Interfaces;
-    using BankProject.Singletons;
+    using BankProject.Singleton;
 
-    internal class Bank : IBank
+    public class Bank : IBank
     {
         public Bank()
         {
-            this.Accounts = new List<Account>();
+            this.Accounts = new List<IAccount>();
             this.NumberFormat = NumberFormatSingleton.Instance;
+            this.MementosStack = new Caretaker<IBank>().MementosStack;
         }
 
-        public List<Account> Accounts { get; set; }
+        public List<IAccount> Accounts { get; set; }
 
         private NumberFormatInfo NumberFormat { get; init; }
+
+        public IBank State { get; set; }
+
+        public Stack<IMemento<IBank>> MementosStack { get; set; }
 
         public string AddAccount(List<string> arguments)
         {
@@ -24,15 +32,15 @@
             switch (arguments.Count)
             {
                 case 0:
-                    output = "Arguments are missing!";
+                    output = MessageConstant.MISSING_ARGUMENTS_MESSAGE;
                     break;
 
                 case 1:
-                    output = "Last name and money amount arguments are missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_AND_MONEY_AMOUNT_ARGUMENTS_MESSAGE;
                     break;
 
                 case 2:
-                    output = "Balance agurment is missing!";
+                    output = MessageConstant.MISSING_BALANCE_ARGUMENT_MESSAGE;
                     break;
 
                 case 3:
@@ -44,25 +52,27 @@
                     {
                         if (balance >= 0)
                         {
-                            Account account = new Account(firstName, lastName, balance);
+                            IAccount account = new Account(firstName, lastName, balance);
+                            this.CreateSnapshot();
+
                             this.Accounts.Add(account);
 
-                            output = "Account is added successfully";
+                            output = MessageConstant.ACCOUNT_ADDED_SUCCESSFULLY_MESSAGE;
                         }
                         else
                         {
-                            output = "A client cannot have negative balance!";
+                            output = MessageConstant.NEGATIVE_BALANCE_MESSAGE;
                         }
 
                     }
                     else
                     {
-                        output = "Invalid money ammount format!";
+                        output = MessageConstant.INVALID_MONEY_AMOUNT_FORMAT_MESSAGE;
                     }
                     break;
 
                 case > 3:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
 
@@ -78,32 +88,34 @@
             switch (arguments.Count)
             {
                 case 0:
-                    output = "Arguments are missing!";
+                    output = MessageConstant.MISSING_ARGUMENTS_MESSAGE;
                     break;
 
                 case 1:
-                    output = "Last name argument is missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_ARGUMENT_MESSAGE;
                     break;
 
                 case 2:
                     string firstName = arguments[0];
                     string lastName = arguments[1];
 
-                    Account account = FindAccountHolder(firstName, lastName);
+                    IAccount account = FindAccountHolder(firstName, lastName);
 
                     if (account is null)
                     {
-                        output = "Such client doesn't exist!";
+                        output = MessageConstant.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
                     }
                     else
                     {
+                        this.CreateSnapshot();
+
                         Accounts.Remove(account);
-                        output = "Account is successfully removed!";
+                        output = MessageConstant.ACCOUNT_SUCCESSFULLY_REMOVED_MESSAGE;
                     }
                     break;
 
                 case > 2:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
 
@@ -119,15 +131,15 @@
             switch (arguments.Count)
             {
                 case 0:
-                    output = "Arguments are missing!";
+                    output = MessageConstant.MISSING_ARGUMENTS_MESSAGE;
                     break;
 
                 case 1:
-                    output = "Last name and money amount arguments are missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_AND_MONEY_AMOUNT_ARGUMENTS_MESSAGE;
                     break;
 
                 case 2:
-                    output = "Money amount agurment is missing!";
+                    output = MessageConstant.MISSING_MONEY_AMOUNT_ARGUMENT_MESSAGE;
                     break;
 
                 case 3:
@@ -138,21 +150,24 @@
                     {
                         if (amount > 0)
                         {
-                            Account account = FindAccountHolder(firstName, lastName);
+                            IAccount account = FindAccountHolder(firstName, lastName);
 
                             try
                             {
                                 if (account is null)
                                 {
-                                    output = "Such client doesn't exist!";
+                                    output = MessageConstant.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
                                 }
                                 else if (account.Balance > amount)
                                 {
+                                    this.CreateSnapshot();
+
                                     account.DrawMoney(amount);
-                                    output = string.Format(this.NumberFormat, "Successfully withdrew {0:C} from {1}'s account", 
+                                    output = string.Format(this.NumberFormat, 
+                                                            MessageConstant.SUCCESSFULLY_WITHDREW_MONEY_FROM_ACCOUNT_MESSAGE, 
                                                             amount, account.AccountHolderFullName);
                                 }
-                                else throw new ArgumentException("Insufficient funds!");
+                                else throw new ArgumentException(MessageConstant.INSUFFICIENT_FUND_MESSAGE);
                             }
                             catch (ArgumentException ae)
                             {
@@ -161,18 +176,18 @@
                         }
                         else
                         {
-                            output = "Cannot draw zero or negative funds!";
+                            output = MessageConstant.CANNOT_DRAW_ZERO_OR_NEGATIVE_FUNDS_MESSAGE;
                         }
                     }
                     else
                     {
-                        output = "Invalid money amount format!";
+                        output = MessageConstant.INVALID_MONEY_AMOUNT_FORMAT_MESSAGE;
                     }
 
                     break;
 
                 case > 4:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
 
@@ -188,15 +203,15 @@
             switch (arguments.Count)
             {
                 case 0:
-                    output = "Arguments are missing!";
+                    output = MessageConstant.MISSING_ARGUMENTS_MESSAGE;
                     break;
 
                 case 1:
-                    output = "Last name and money amount arguments are missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_AND_MONEY_AMOUNT_ARGUMENTS_MESSAGE;
                     break;
 
                 case 2:
-                    output = "Money amount argument is missing!";
+                    output = MessageConstant.MISSING_MONEY_AMOUNT_ARGUMENT_MESSAGE;
                     break;
 
                 case 3:
@@ -208,33 +223,35 @@
                     {
                         if (amount > 0)
                         {
-                            Account account = FindAccountHolder(firstName, lastName);
+                            IAccount account = FindAccountHolder(firstName, lastName);
 
                             if (account is null)
                             {
-                                output = "Such client doesn't exist!";
+                                output = MessageConstant.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
                             }
                             else
                             {
+                                this.CreateSnapshot();
+
                                 account.AddMoney(amount);
-                                output = string.Format(this.NumberFormat, "Successfully added {0:C} to the {1}'s account", 
-                                                        amount, account.AccountHolderFullName);
+                                output = string.Format(this.NumberFormat, MessageConstant.SUCCESSFULLY_ADDED_MONEY_TO_ACCOUNT_MESSAGE, 
+                                                        amount, account.AccountHolderFullName, account.Balance);
                             }
                         }
                         else
                         {
-                            output = "Cannot recharge account with zero or negative funds!";
+                            output = MessageConstant.CANNOT_RECHARGE_ACCOUNT_WITH_ZERO_OR_NEGATIVE_FUNDS;
                         }
                     }
                     else
                     {
-                        output = "Invalid money amount format!";
+                        output = MessageConstant.INVALID_MONEY_AMOUNT_FORMAT_MESSAGE;
                     }
 
                     break;
 
                 case > 3:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
 
@@ -250,78 +267,78 @@
             switch (arguments.Count)
             {
                 case 0:
-                    output = "Arguments are missing!";
+                    output = MessageConstant.MISSING_ARGUMENTS_MESSAGE;
                     break;
 
                 case 1:
-                    output = "Last name, money amount and years to return arguments are missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_MONEY_AMOUNT_AND_YEAR_TO_RETURN_ARGUMENTS_MESSAGE;
                     break;
 
                 case 2:
-                    output = "Money amount and years to return arguments are missing!";
+                    output = MessageConstant.MISSING_MONEY_AMOUNT_AND_YEARS_TO_RETURN_ARGUMENTS_MESSAGE;
                     break;
 
                 case 3:
-                    output = "Years to return argument is missing!";
+                    output = MessageConstant.MISSING_YEARS_TO_RETURN_ARGUMENTS_MESSAGE;
                     break;
 
                 case 4:
                     string firstName = arguments[0];
                     string lastName = arguments[1];
                     bool moneyIsParsed = decimal.TryParse(arguments[2], out decimal moneyAmmount);
-                    bool yearsAreParsed = int.TryParse(arguments[3], out int yearsToReturn);
+                    bool yearsAreParsed = byte.TryParse(arguments[3], out byte yearsToReturn);
                     if (moneyIsParsed && yearsAreParsed)
                     {
                         if (moneyAmmount > 0 && yearsToReturn > 0)
                         {
-                            Account account = FindAccountHolder(firstName, lastName);
+                            IAccount account = FindAccountHolder(firstName, lastName);
 
                             if (account is null)
                             {
-                                output = "Such client doesn't exist!";
+                                output = MessageConstant.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
                             }
                             else
                             {
-                                Loan loan = new Loan(account.AccountType, moneyAmmount, yearsToReturn);
+                                this.CreateSnapshot();
+
+                                ILoan loan = new Loan(moneyAmmount, account.AccountType, yearsToReturn);
                                 account.DrawLoan(loan);
 
-                                output = string.Format(this.NumberFormat, "Successfully drawn a {0:C} loan", moneyAmmount) +
-                                            Environment.NewLine +
-                                            string.Format(this.NumberFormat, "The client must return {0:C} to the bank after {1} years",
-                                            loan.AmountToReturn, yearsToReturn);
+                                output = string.Format(this.NumberFormat, MessageConstant.SUCCESSFULLY_DRAWN_LOAN_MESSAGE, 
+                                                        moneyAmmount, loan.AmountToReturn, yearsToReturn);
                             }
 
                         }
-                        else if (moneyAmmount < 0 && yearsToReturn < 0)
+                        else if (moneyAmmount <= 0 && yearsToReturn <= 0)
                         {
-                            output = "Money ammount and years to return cannot be negative!";
+                            output = MessageConstant.MONEY_AMOUNT_AND_YEARS_TO_RETURN_CANNOT_BE_NEGATIVE_OR_ZERO_MESSAGE;
                         }
-                        else if (moneyAmmount < 0)
+                        else if (moneyAmmount <= 0)
                         {
-                            output = "Cannot draw zero or negative funds!";
+                            output = MessageConstant.CANNOT_DRAW_ZERO_OR_NEGATIVE_FUNDS_MESSAGE;
                         }
-                        else if (yearsToReturn < 0)
+                        else if (yearsToReturn <= 0)
                         {
-                            output = "Years to return cannot be zero or negative!";
+                            output = MessageConstant.YEARS_TO_RETURN_MUST_BE_POSITIVE;
                         }
                     }
                     else if (!moneyIsParsed && !yearsAreParsed)
                     {
-                        output = "Invalid money amount and years to return format!";
+                        output = MessageConstant.INVALID_MONEY_AMOUNT_AND_YEARS_TO_RETURN_FORMAT_MESSAGE;
                     }
                     else if (!moneyIsParsed)
                     {
-                        output = "Invalid money format!";
+                        output = MessageConstant.INVALID_MONEY_AMOUNT_FORMAT_MESSAGE;
                     }
                     else if (!yearsAreParsed)
                     {
-                        output = "Invalid year to return format!";
+                        output = MessageConstant.INVALID_YEARS_TO_RETURN_FORMAT_MESSAGE;
                     }
 
                     break;
 
                 case > 4:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
 
@@ -337,15 +354,15 @@
             switch (arguments.Count)
             {
                 case 0:
-                    output = "Arguments are missing!";
+                    output = MessageConstant.MISSING_ARGUMENTS_MESSAGE;
                     break;
 
                 case 1:
-                    output = "Last name and money amount arguments are missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_AND_MONEY_AMOUNT_ARGUMENTS_MESSAGE;
                     break;
 
                 case 2:
-                    output = "Money amount argument is missing!";
+                    output = MessageConstant.MISSING_MONEY_AMOUNT_ARGUMENT_MESSAGE;
                     break;
 
                 case 3:
@@ -357,19 +374,19 @@
                     {
                         if (ammount > 0)
                         {
-                            Account account = FindAccountHolder(firstName, lastName);
+                            IAccount account = FindAccountHolder(firstName, lastName);
 
                             if (account is null)
                             {
-                                output = "Such client doesn't exist!";
+                                output = MessageConstant.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
                             }
                             else
                             {
-                                Loan loanToBeReturned = FindLoan(account.Loans, ammount);
+                                ILoan loanToBeReturned = FindLoan(account.Loans, ammount);
 
                                 if (loanToBeReturned is null)
                                 {
-                                    output = "Such loan doesn't exist!";
+                                    output = MessageConstant.LOAN_DOES_NOT_EXIST_MESSAGE;
                                 }
                                 else
                                 {
@@ -377,17 +394,17 @@
                                     {
                                         if (account.Balance < loanToBeReturned.AmountToReturn)
                                         {
-                                            throw new OperationCanceledException("Account balance is less than the loan return " +
-                                                                                    "ammount! Transaction canceled!");
+                                            throw new OperationCanceledException(
+                                                        MessageConstant.ACCOUNT_BALANCE_LOWER_THAN_LOAN_RETURN_AMOUNT_MESSAGE);
                                         }
                                         else
                                         {
+                                            this.CreateSnapshot();
+
                                             account.ReturnLoan(loanToBeReturned);
 
-                                            output =    $"Successfully returned the loan" + Environment.NewLine +
-                                                        string.Format(this.NumberFormat, 
-                                                        "The client returned total of {0:C} to the", loanToBeReturned.AmountToReturn) +
-                                                        $" bank after {loanToBeReturned.YearsToReturn} years!";
+                                            output = string.Format(this.NumberFormat, MessageConstant.SUCCESSFULLY_RETURNED_LOAN_MESSAGE,
+                                                                    loanToBeReturned.AmountToReturn, loanToBeReturned.YearsToReturn);
                                         }
                                     }
                                     catch (OperationCanceledException oce)
@@ -399,17 +416,17 @@
                         }
                         else
                         {
-                            output = "Cannot draw zero or negative funds!";
+                            output = MessageConstant.CANNOT_DRAW_ZERO_OR_NEGATIVE_FUNDS_MESSAGE;
                         }
                     }
                     else
                     {
-                        output = "Invalid money format!";
+                        output = MessageConstant.INVALID_MONEY_AMOUNT_FORMAT_MESSAGE;
                     }
                     break;
 
                 case > 3:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
 
@@ -425,18 +442,18 @@
             switch (arguments.Count)
             {
                 case 2:
-                    output = "Last name is missing!";
+                    output = MessageConstant.MISSING_LAST_NAME_ARGUMENT_MESSAGE;
                     break;
 
                 case 3:
                     string firstName = arguments[0];
                     string lastName = arguments[1];
 
-                    Account account = FindAccountHolder(firstName, lastName);
+                    IAccount account = FindAccountHolder(firstName, lastName);
 
                     if (account is null)
                     {
-                        output = "Such client doesn't exist!";
+                        output = MessageConstant.ACCOUNT_DOES_NOT_EXIST_MESSAGE;
                     }
                     else
                     {
@@ -444,16 +461,17 @@
 
                         switch (checkTypeString)
                         {
-                            case "Balance":
-                                output = string.Format(this.NumberFormat, "{0} balance is {1:C})", 
-                                            account.AccountHolderFullName, account.Balance);
+                            case StringConstant.BALANCE_CHECK_STRING:
+                                output = string.Format(this.NumberFormat, MessageConstant.BALANCE_MESSAGE, 
+                                                        account.AccountHolderFullName, account.Balance);
                                 break;
 
-                            case "AccountType":
-                                output = $"{account.AccountHolderFullName} account's type is {account.AccountTypeName}";
+                            case StringConstant.ACCOUNT_TYPE_CHECK_STRING:
+                                output = string.Format(MessageConstant.ACCOUNT_TYPE_MESSAGE, account.AccountHolderFullName,
+                                                        account.AccountTypeName);
                                 break;
 
-                            case "Account":
+                            case StringConstant.ACCOUNT_CHECK_STRING:
                                 output = account.ToString();
                                 break;
                         }
@@ -461,7 +479,7 @@
                     break;
 
                 case > 3:
-                    output = "Too many arguments passed!";
+                    output = MessageConstant.TOO_MANY_ARGUMENTS_PASSED_MESSAGE;
                     break;
             }
             output += Environment.NewLine;
@@ -471,28 +489,80 @@
 
         public string Shutdown()
         {
-            string output = "Shutting down...";
+            string output = MessageConstant.SHUTDOWN_MESSAGE;
 
             return output;
         }
 
-        private Account FindAccountHolder(string firstName, string lastName)
+        private IAccount FindAccountHolder(string firstName, string lastName)
         {
-            Account account = Accounts.Where(a => a.FirstName == firstName && a.LastName == lastName)
+            IAccount account = Accounts.Where(a => a.FirstName == firstName && a.LastName == lastName)
                                         .FirstOrDefault();
 
             return account;
         }
 
-        private Loan FindLoan(List<Loan> loans, decimal ammount)
+        private Loan FindLoan(List<ILoan> loans, decimal ammount)
         {
             foreach (Loan loan in loans)
             {
-                bool isMatched = loan.DrawnAmount == ammount;
-                if (isMatched) return loan;
+                bool exists = loan.DrawnAmount == ammount;
+                if (exists) return loan;
             }
 
             return null;
+        }
+
+        public IMemento<IBank> SaveMemento() => new Memento<IBank>(this.State);
+
+        public void RestoreMemento(IMemento<IBank> memento) => this.Accounts = memento.State.Accounts;
+
+        public void CreateSnapshot()
+        {
+            IBank copyBank = DeepCopyBank();
+            this.State = copyBank;
+
+            IMemento<IBank> newMemento = this.SaveMemento();
+            this.MementosStack.Push(newMemento);
+        }
+
+        public void RevertSnapshot(out bool isSuccessful)
+        {
+            isSuccessful = this.MementosStack.TryPop(out IMemento<IBank> newMemento);
+
+            if (isSuccessful)
+            {
+                this.RestoreMemento(newMemento);
+            }
+        }
+
+        private IBank DeepCopyBank()
+        {
+            IBank copyBank = (IBank)this.MemberwiseClone();
+
+            copyBank.Accounts = new List<IAccount>(this.Accounts.Count);
+            for (int i = 0; i < this.Accounts.Count; i++)
+            {
+                IAccount currentAccount = this.Accounts[i];
+
+                List<ILoan> copyLoans = new List<ILoan>(currentAccount.Loans.Count);
+
+                for (int j = 0; j < currentAccount.Loans.Count; j++)
+                {
+                    ILoan currentLoan = currentAccount.Loans[j];
+
+                    ILoan currentLoanCopy = new Loan(currentLoan.Id, currentLoan.DrawnAmount, currentLoan.InterestRate, currentLoan.YearsToReturn);
+
+                    copyLoans.Add(currentLoanCopy);
+                }
+
+                IAccount currentAccountCopy = new Account(currentAccount.FirstName, currentAccount.LastName, currentAccount.Id,
+                                                    currentAccount.Balance, copyLoans);
+
+                copyBank.Accounts.Add(currentAccountCopy);
+            }
+
+            return copyBank;
         }
     }
 }

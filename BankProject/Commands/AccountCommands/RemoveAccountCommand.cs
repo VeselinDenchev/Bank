@@ -1,6 +1,6 @@
 ﻿namespace BankProject.Commands.AccountCommands
 {
-    internal class RemoveAccountCommand : BankCommand
+    public class RemoveAccountCommand : BankCommand
     {
         public override string Execute(List<string> arguments)
         {

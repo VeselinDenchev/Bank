@@ -2,30 +2,44 @@
 {
     using System.Globalization;
 
+    using BankProject.Constants;
     using BankProject.Models.AccountTypes;
-    using BankProject.Singletons;
+    using BankProject.Models.Interfaces;
+    using BankProject.Singleton;
 
-    public class Loan
+    public class Loan : ILoan
     {
-        public Loan(AccountType accountType, decimal drawnAmmount, int yearsToReturn)
+        public Loan(decimal drawnAmmount, AccountType accountType, byte yearsToReturn)
         {
+            this.Id = Guid.NewGuid().ToString();
             this.DrawnAmount = drawnAmmount;
             this.InterestRate = CalculateInterestRate(accountType);
             this.YearsToReturn = yearsToReturn;
             this.NumberFormat = NumberFormatSingleton.Instance;
         }
 
-        public decimal DrawnAmount { get; set; }
+        public Loan(string id, decimal drawnAmmount, decimal interestRate, byte yearsToReturn)
+        {
+            this.Id = id;
+            this.DrawnAmount = drawnAmmount;
+            this.InterestRate = interestRate;
+            this.YearsToReturn = yearsToReturn;
+            this.NumberFormat = NumberFormatSingleton.Instance;
+        }
 
-        public decimal InterestRate { get; set; }
+        public string Id { get; init; }
 
-        public int YearsToReturn { get; set; }
+        public decimal DrawnAmount { get; init; }
+
+        public decimal InterestRate { get; init; }
+
+        public byte YearsToReturn { get; init; }
 
         public decimal AmountToReturn => DrawnAmount * (1 + YearsToReturn * InterestRate); // Simple interest rate
 
         private NumberFormatInfo NumberFormat { get; init; }
 
-        private decimal CalculateInterestRate(AccountType accountType)
+        protected decimal CalculateInterestRate(AccountType accountType)
         {
             decimal interestRate = 0;
 
@@ -53,10 +67,8 @@
 
         public override string ToString()
         {
-            string loanString = string.Format(this.NumberFormat, "\tDrawn ammount: {0:C}", this.DrawnAmount) + Environment.NewLine +
-                                $"\tInterest rate: {(int)(this.InterestRate * 100)}%" + Environment.NewLine +
-                                $"\tYears to return: {this.YearsToReturn}" + Environment.NewLine +
-                                string.Format(this.NumberFormat, "\tAmmount to return: {0:C}", this.AmountToReturn);
+            string loanString = string.Format(this.NumberFormat, StringConstant.LOAN_STRING, this.Id, this.DrawnAmount, (int)(this.InterestRate * 100),
+                                                this.Id, this.YearsToReturn, this.AmountToReturn);
 
             return loanString;
         }

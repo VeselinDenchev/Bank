@@ -1,12 +1,10 @@
 ﻿namespace BankProject.Commands.SystemCommands
 {
-    using BankProject.Commands.Interfaces;
-
-    internal class ShutdownCommand : ICommand
+    public class ShutdownCommand : BankCommand
     {
-        public string Execute(List<string> arguments)
+        public override string Execute(List<string> arguments = null)
         {
-            string result = "Shutting down...";
+            string result = this.Bank.Shutdown();
 
             return result;
         }

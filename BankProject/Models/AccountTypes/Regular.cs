@@ -1,20 +1,21 @@
 ﻿namespace BankProject.Models.AccountTypes
 {
-    using BankProject.Models;
+    using BankProject.Constants;
+    using BankProject.Models.Interfaces;
 
-    internal class Regular : AccountType
+    public class Regular : AccountType
     {
         public Regular(AccountType accountType)
             : this(accountType.Account)
         {
         }
 
-        public Regular(Account account) : base(account)
+        public Regular(IAccount account) 
+            : base(account)
         {
             Account = account;
-            LowerLimit = 0;
-            UpperLimit = 100_000;
-            //this.StateChangeCheck();
+            LowerLimit = AccountTypeLimitConstant.REGULAR_ACCOUNT_TYPE_LOWER_LIMIT;
+            UpperLimit = AccountTypeLimitConstant.REGULAR_ACCOUNT_TYPE_UPPER_LIMIT;
         }
 
         public override void AddMoneyToAccount(decimal amount)

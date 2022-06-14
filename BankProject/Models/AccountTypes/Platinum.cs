@@ -1,20 +1,21 @@
 ﻿namespace BankProject.Models.AccountTypes
 {
-    using BankProject.Models;
+    using BankProject.Constants;
+    using BankProject.Models.Interfaces;
 
-    internal class Platinum : AccountType
+    public class Platinum : AccountType
     {
         public Platinum(AccountType accountType)
             : this(accountType.Account)
         {
         }
 
-        public Platinum(Account account) : base(account)
+        public Platinum(IAccount account) 
+            : base(account)
         {
             Account = account;
-            LowerLimit = 500_000;
-            UpperLimit = decimal.MaxValue;
-            //this.StateChangeCheck();
+            LowerLimit = AccountTypeLimitConstant.PLATINUM_ACCOUNT_TYPE_LOWER_LIMIT;
+            UpperLimit = AccountTypeLimitConstant.PLATINUM_ACCOUNT_TYPE_UPPER_LIMIT;
         }
 
         public override void AddMoneyToAccount(decimal amount)

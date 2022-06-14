@@ -3,9 +3,9 @@
     using BankProject.Commands.Interfaces;
     using BankProject.Models;
     using BankProject.Models.Interfaces;
-    using BankProject.Singletons;
+    using BankProject.Singleton;
 
-    internal abstract class BankCommand : ICommand
+    public abstract class BankCommand : ICommand
     {
         public BankCommand()
         {

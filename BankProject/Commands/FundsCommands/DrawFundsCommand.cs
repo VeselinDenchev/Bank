@@ -1,6 +1,6 @@
 ﻿namespace BankProject.Commands.FundsCommands
 {
-    internal class DrawFundsCommand : BankCommand
+    public class DrawFundsCommand : BankCommand
     {
         public override string Execute(List<string> arguments)
         {
