@@ -1,4 +1,4 @@
-﻿namespace BankProject.Memento.Interfaces
+﻿namespace BankProject.Mementos.Interfaces
 {
     public interface IOriginator<T>
     {

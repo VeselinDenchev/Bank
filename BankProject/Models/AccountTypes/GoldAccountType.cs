@@ -14,8 +14,8 @@
             : base(account)
         {
             Account = account;
-            LowerLimit = AccountTypeLimitConstant.GOLD_ACCOUNT_TYPE_LOWER_LIMIT;
-            UpperLimit = AccountTypeLimitConstant.GOLD_ACCOUNT_TYPE_UPPER_LIMIT;
+            LowerLimit = AccountTypeConstant.GOLD_ACCOUNT_TYPE_LOWER_LIMIT;
+            UpperLimit = AccountTypeConstant.GOLD_ACCOUNT_TYPE_UPPER_LIMIT;
         }
 
         public override void AddMoneyToAccount(decimal amount)
@@ -43,5 +43,7 @@
                 Account.AccountType.StateChangeCheck();
             }
         }
+
+        public override string ToString() => AccountTypeConstant.GOLD_ACCOUNT_TYPE_NAME;
     }
 }

@@ -2,7 +2,7 @@
 {
     using BankProject.Models.Interfaces;
 
-    public abstract class AccountType
+    public abstract class AccountType : IState
     {
         public AccountType(IAccount account)
         {

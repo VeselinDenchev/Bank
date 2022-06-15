@@ -1,6 +1,6 @@
-﻿namespace BankProject.Memento
+﻿namespace BankProject.Mementos
 {
-    using BankProject.Memento.Interfaces;
+    using BankProject.Mementos.Interfaces;
 
     public class Memento<T> : IMemento<T>
     {

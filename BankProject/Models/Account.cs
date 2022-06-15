@@ -41,8 +41,6 @@
 
         public AccountType AccountType { get; set; }
 
-        public string AccountTypeName => AccountType.GetType().Name;
-
         public List<ILoan> Loans { get; set; }
 
         private NumberFormatInfo NumberFormat { get; init; }
@@ -67,7 +65,7 @@
         {
             StringBuilder accountStringBuilder = new StringBuilder();
             accountStringBuilder.AppendLine(string.Format(this.NumberFormat, StringConstant.ACCOUNT_STRING, this.AccountHolderFullName, this.Id,
-                                                            this.Balance, this.AccountTypeName));
+                                                            this.Balance, this.AccountType.ToString()));
 
             bool hasLoans = this.Loans.Count > 0;
             if (hasLoans)

@@ -14,8 +14,6 @@
 
         public AccountType AccountType { get; set; }
 
-        public string AccountTypeName => AccountType.GetType().Name;
-
         public List<ILoan> Loans { get; set; }
 
         public void AddMoney(decimal amount);

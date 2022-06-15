@@ -1,11 +1,9 @@
 ﻿namespace BankProject.Models.Interfaces
 {
-    using BankProject.Memento.Interfaces;
+    using BankProject.Mementos.Interfaces;
 
-    public interface IBank : IOriginator<IBank>
+    public interface IBank
     {
-        public List<IAccount> Accounts { get; set; }
-
         public string AddAccount(List<string> arguments);
 
         public string RemoveAccount(List<string> arguments);
@@ -21,8 +19,6 @@
         public string Check(List<string> arguments);
 
         public string Shutdown();
-
-        public Stack<IMemento<IBank>> MementosStack { get; set; }
 
         public void CreateSnapshot();
 

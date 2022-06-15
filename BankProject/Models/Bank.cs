@@ -3,26 +3,20 @@
     using System.Globalization;
 
     using BankProject.Constants;
-    using BankProject.Memento;
-    using BankProject.Memento.Interfaces;
+    using BankProject.Mementos;
+    using BankProject.Mementos.Interfaces;
     using BankProject.Models.Interfaces;
+    using BankProject.Prototypes;
 
-    public sealed class Bank : IBank
+    public sealed class Bank : BankPrototype, IBank, IOriginator<Bank>
     {
         public Bank()
+            : base()
         {
-            this.Accounts = new List<IAccount>();
             this.NumberFormat = new CultureInfo(StringConstant.ENGLISH_UNITED_STATES_CULTURE_STRING).NumberFormat;
-            this.MementosStack = new Caretaker<IBank>().MementosStack;
         }
 
-        public List<IAccount> Accounts { get; set; }
-
         private NumberFormatInfo NumberFormat { get; init; }
-
-        public IBank State { get; set; }
-
-        public Stack<IMemento<IBank>> MementosStack { get; set; }
 
         public string AddAccount(List<string> arguments)
         {
@@ -79,7 +73,7 @@
 
             return output;
         }
-
+        
         public string RemoveAccount(List<string> arguments)
         {
             string output = null;
@@ -471,7 +465,7 @@
 
                             case StringConstant.ACCOUNT_TYPE_CHECK_STRING:
                                 output = string.Format(MessageConstant.ACCOUNT_TYPE_MESSAGE, account.AccountHolderFullName,
-                                                        account.AccountTypeName);
+                                                        account.AccountType.ToString());
                                 break;
 
                             case StringConstant.ACCOUNT_CHECK_STRING:
@@ -492,9 +486,9 @@
 
         public string Shutdown()
         {
-            string output = MessageConstant.SHUTDOWN_MESSAGE;
+            string result = MessageConstant.SHUTDOWN_MESSAGE;
 
-            return output;
+            return result;
         }
 
         private IAccount FindAccountHolder(string firstName, string lastName)
@@ -516,22 +510,22 @@
             return null;
         }
 
-        public IMemento<IBank> SaveMemento() => new Memento<IBank>(this.State);
+        public IMemento<Bank> SaveMemento() => new Memento<Bank>(this.State);
 
-        public void RestoreMemento(IMemento<IBank> memento) => this.Accounts = memento.State.Accounts;
+        public void RestoreMemento(IMemento<Bank> memento) => this.Accounts = memento.State.Accounts;
 
         public void CreateSnapshot()
         {
-            IBank copyBank = DeepCopyBank();
+            Bank copyBank = (Bank)this.Clone();
             this.State = copyBank;
 
-            IMemento<IBank> newMemento = this.SaveMemento();
+            IMemento<Bank> newMemento = this.SaveMemento();
             this.MementosStack.Push(newMemento);
         }
 
         public void RevertSnapshot(out bool isSuccessful)
         {
-            isSuccessful = this.MementosStack.TryPop(out IMemento<IBank> newMemento);
+            isSuccessful = this.MementosStack.TryPop(out IMemento<Bank> newMemento);
 
             if (isSuccessful)
             {
@@ -539,9 +533,9 @@
             }
         }
 
-        private IBank DeepCopyBank()
+        public override BankPrototype Clone()
         {
-            IBank copyBank = (IBank)this.MemberwiseClone();
+            BankPrototype copyBank = (Bank)this.MemberwiseClone();
 
             copyBank.Accounts = new List<IAccount>(this.Accounts.Count);
             for (int i = 0; i < this.Accounts.Count; i++)

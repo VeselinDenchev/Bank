@@ -14,8 +14,8 @@
             : base(account)
         {
             Account = account;
-            LowerLimit = AccountTypeLimitConstant.BRONZE_ACCOUNT_TYPE_LOWER_LIMIT;
-            UpperLimit = AccountTypeLimitConstant.BRONZE_ACCOUNT_TYPE_UPPER_LIMIT;
+            LowerLimit = AccountTypeConstant.BRONZE_ACCOUNT_TYPE_LOWER_LIMIT;
+            UpperLimit = AccountTypeConstant.BRONZE_ACCOUNT_TYPE_UPPER_LIMIT;
         }
 
         public override void AddMoneyToAccount(decimal amount)
@@ -43,5 +43,7 @@
                 Account.AccountType.StateChangeCheck();
             }
         }
+
+        public override string ToString() => AccountTypeConstant.BRONZE_ACCOUNT_TYPE_NAME;
     }
 }

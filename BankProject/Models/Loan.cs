@@ -42,21 +42,23 @@
         {
             decimal interestRate = 0;
 
-            switch (accountType.GetType().Name)
+            Console.WriteLine(accountType.ToString());
+
+            switch (accountType.ToString())
             {
-                case "Regular":
+                case AccountTypeConstant.REGULAR_ACCOUNT_TYPE_NAME:
                     interestRate = 0.6m;
                     break;
 
-                case "Bronze":
+                case AccountTypeConstant.BRONZE_ACCOUNT_TYPE_NAME:
                     interestRate = 0.5m;
                     break;
 
-                case "Gold":
+                case AccountTypeConstant.GOLD_ACCOUNT_TYPE_NAME:
                     interestRate = 0.3m;
                     break;
 
-                case "Platinum":
+                case AccountTypeConstant.PLATINUM_ACCOUNT_TYPE_NAME:
                     interestRate = 0.01m;
                     break;
             }

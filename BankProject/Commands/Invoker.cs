@@ -10,14 +10,19 @@
 
     public class Invoker : IInvoker
     {
+        public Invoker()
+        {
+            this.Bank = new Bank();
+        }
+
+        public IBank Bank { get; init; }
+
+        private ICommand Command { get; set; }
+
         public void Run()
         {
             string result = string.Empty;
             string input = null;
-
-            IBank bank = new Bank();
-
-            ICommand command = null;
 
             Assembly assembly = Assembly.GetCallingAssembly();
             Type[] types = assembly.GetTypes();
@@ -43,8 +48,8 @@
 
                     try
                     {
-                        command = (ICommand)Activator.CreateInstance(commandTypeToExecute);
-                        result = command.Execute(bank, arguments);
+                        this.Command = (ICommand)Activator.CreateInstance(commandTypeToExecute);
+                        result = this.Command.Execute(this.Bank, arguments);
                     }
                     catch (MissingMethodException)
                     {
@@ -66,8 +71,8 @@
                 }
             }
 
-            command = new ShutdownCommand(); 
-            result = command.Execute(bank);
+            this.Command = new ShutdownCommand(); 
+            result = this.Command.Execute(this.Bank);
             Console.WriteLine(result);
         }
     }
