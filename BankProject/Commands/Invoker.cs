@@ -56,8 +56,6 @@
                         result = MessageConstant.INVALID_COMMAND_MESSAGE;
 
                     }
-                    
-
                 }
                 catch (ArgumentException ae)
                 {

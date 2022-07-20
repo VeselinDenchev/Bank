@@ -8,7 +8,7 @@
     using BankProject.Models.Interfaces;
     using BankProject.Prototypes;
 
-    public sealed class Bank : BankPrototype, IBank, IOriginator<Bank>
+    public sealed class Bank : BankPrototype, IBank, IOriginator<Bank>, ISnapshot
     {
         public Bank()
             : base()
